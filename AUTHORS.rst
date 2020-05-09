@@ -2,6 +2,7 @@
 Python-PDFKit authors
 =====================
 
+* `Shivansh Saini <https://github.com/shivanshs9>`_
 * `Stanislav Golovanov <https://github.com/JazzCore>`_
 
 

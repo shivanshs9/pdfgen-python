@@ -20,17 +20,19 @@ class PyTest(TestCommand):
 
 def long_description():
     """Pre-process the README so that PyPi can render it properly."""
-    with codecs.open('README.rst', encoding='utf8') as f:
-        rst = f.read()
-    code_block = '(:\n\n)?\.\. code-block::.*'
-    rst = re.sub(code_block, '::', rst)
-    return rst + '\n\n' + open('HISTORY.rst').read()
+    readme = open('README.md').read()
+    try:
+        history = '\n\n' + open('HISTORY.md').read()
+    except:
+        history = ''
+    return readme + history
 
 setup(
     name='pdfkit-async',
     version=pdfkit.__version__,
     description=pdfkit.__doc__.strip(),
     long_description=long_description(),
+    long_description_content_type='text/markdown',
     download_url='https://github.com/shivanshs9/python-pdfkit-async',
     license=pdfkit.__license__,
     tests_require=['pytest', 'pytest-asyncio', 'asynctest'],
