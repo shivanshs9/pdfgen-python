@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
-import os
-import io
-import sys
 import codecs
+import io
+import os
+import sys
 import unittest
 
+import asynctest
+import pytest
+import pytest_asyncio.plugin
+
+import pdfkit
 
 if sys.version_info[0] == 2 and sys.version_info[1] == 7:
     unittest.TestCase.assertRegex = unittest.TestCase.assertRegexpMatches
@@ -14,7 +19,6 @@ if sys.version_info[0] == 2 and sys.version_info[1] == 7:
 TESTS_ROOT = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, os.path.realpath(os.path.join(TESTS_ROOT, '..')))
 
-import pdfkit
 
 
 class TestPDFKitInitialization(unittest.TestCase):
@@ -294,7 +298,7 @@ class TestPDFKitCommandGeneration(unittest.TestCase):
         self.assertEqual(len(cmd), 6)
 
 
-class TestPDFKitGeneration(unittest.TestCase):
+class TestPDFKitGeneration(asynctest.TestCase):
     """Test to_pdf() method"""
 
     def setUp(self):
@@ -304,15 +308,17 @@ class TestPDFKitGeneration(unittest.TestCase):
         if os.path.exists('out.pdf'):
             os.remove('out.pdf')
 
-    def test_pdf_generation(self):
+    @pytest.mark.asyncio
+    async def test_pdf_generation(self):
         r = pdfkit.PDFKit('html', 'string', options={'page-size': 'Letter'})
-        pdf = r.to_pdf('out.pdf')
+        pdf = await r.to_pdf('out.pdf')
         self.assertTrue(pdf)
 
-    def test_raise_error_with_invalid_url(self):
+    @pytest.mark.asyncio
+    async def test_raise_error_with_invalid_url(self):
         r = pdfkit.PDFKit('wrongurl', 'url')
         with self.assertRaises(IOError):
-            r.to_pdf('out.pdf')
+            await r.to_pdf('out.pdf')
 
     def test_raise_error_with_invalid_file_path(self):
         paths = ['frongpath.html', 'wrongpath2.html']
@@ -369,12 +375,14 @@ class TestPDFKitGeneration(unittest.TestCase):
         r._prepend_css(css_files)
         self.assertIn('<style>%s</style><html>' % "\n".join(css), r.source.to_s())
 
-    def test_stylesheet_throw_error_when_url(self):
+    @pytest.mark.asyncio
+    async def test_stylesheet_throw_error_when_url(self):
         r = pdfkit.PDFKit('http://ya.ru', 'url', css='fixtures/example.css')
 
         with self.assertRaises(r.ImproperSourceError):
-            r.to_pdf()
+            await r.to_pdf()
 
+    @pytest.mark.asyncio
     def test_stylesheet_adding_to_file_with_option(self):
         css = 'fixtures/example.css'
         r = pdfkit.PDFKit('fixtures/example.html', 'file', css=css)
@@ -382,28 +390,32 @@ class TestPDFKitGeneration(unittest.TestCase):
         r._prepend_css(css)
         self.assertIn('font-size', r.source.to_s())
 
-    def test_wkhtmltopdf_error_handling(self):
+    @pytest.mark.asyncio
+    async def test_wkhtmltopdf_error_handling(self):
         r = pdfkit.PDFKit('clearlywrongurl.asdf', 'url')
         with self.assertRaises(IOError):
-            r.to_pdf()
+            await r.to_pdf()
 
-    def test_pdf_generation_from_file_like(self):
+    @pytest.mark.asyncio
+    async def test_pdf_generation_from_file_like(self):
         with open('fixtures/example.html', 'r') as f:
             r = pdfkit.PDFKit(f, 'file')
-            output = r.to_pdf()
+            output = await r.to_pdf()
         self.assertEqual(output[:4].decode('utf-8'), '%PDF')
 
-    def test_raise_error_with_wrong_css_path(self):
+    @pytest.mark.asyncio
+    async def test_raise_error_with_wrong_css_path(self):
         css = 'fixtures/wrongpath.css'
         r = pdfkit.PDFKit('fixtures/example.html', 'file', css=css)
         with self.assertRaises(IOError):
-            r.to_pdf()
+            await r.to_pdf()
 
-    def test_raise_error_if_bad_wkhtmltopdf_option(self):
+    @pytest.mark.asyncio
+    async def test_raise_error_if_bad_wkhtmltopdf_option(self):
         r = pdfkit.PDFKit('<html><body>Hai!</body></html>', 'string',
                           options={'bad-option': None})
         with self.assertRaises(IOError) as cm:
-            r.to_pdf()
+            await r.to_pdf()
 
         raised_exception = cm.exception
         self.assertRegex(str(raised_exception), '^wkhtmltopdf exited with non-zero code 1. error:\nUnknown long argument --bad-option\r?\n')

@@ -1,4 +1,4 @@
-Python-PDFKit: HTML to PDF wrapper
+Async Python-PDFKit: HTML to PDF wrapper
 ==================================
 
 
@@ -8,7 +8,7 @@ Python-PDFKit: HTML to PDF wrapper
 .. image:: https://badge.fury.io/py/pdfkit.svg
         :target: http://badge.fury.io/py/pdfkit
 
-Python 2 and 3 wrapper for wkhtmltopdf utility to convert HTML to PDF using Webkit.
+Python 3.5+ async wrapper for wkhtmltopdf utility to convert HTML to PDF using Webkit.
 
 This is adapted version of `ruby PDFKit <https://github.com/pdfkit/pdfkit>`_ library, so big thanks to them!
 
