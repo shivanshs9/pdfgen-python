@@ -1,5 +1,9 @@
 Changelog
 =========
+- 0.7.2
+    - Fixed Project description for latest rules
+    - Fixed Travis build
+    - Updated README
 - 0.7.0
     - Dropped support of Python2.7 till Python3.4
     - Supports Python3.5+
