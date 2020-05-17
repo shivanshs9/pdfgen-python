@@ -7,7 +7,6 @@ license = "MIT"
 homepage = "https://github.com/shivanshs9/pdfgen-python"
 classifiers=[
     'Programming Language :: Python',
-    'Programming Language :: Python :: 3.5',
     'Programming Language :: Python :: 3.6',
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
@@ -17,6 +16,11 @@ classifiers=[
     'Topic :: Text Processing :: Markup :: HTML',
     'Topic :: Text Processing :: Markup :: XML',
     'Topic :: Utilities'
+]
+include = [
+    'README.md',
+    'AUTHORS.rst',
+    'HISTORY.md'
 ]
 
 [tool.poetry.dependencies]
