@@ -1,5 +1,10 @@
 # Changelog
 
+- 1.0.3
+
+  - Added 'pdfgen-setup' script to setup Chromium
+  - Fixed Travis build
+
 - 1.0.0
 
   - Renamed to PdfGen

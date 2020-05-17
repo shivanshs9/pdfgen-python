@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pdfgen"
-version = "1.0.2"
+version = "1.0.3"
 description = "Pyppeteer-based async python wrapper to convert html to pdf"
 authors = ["Shivansh Saini <shivanshs9@gmail.com>"]
 license = "MIT"
