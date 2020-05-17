@@ -1,155 +1,90 @@
-Async Python-PDFKit: HTML to PDF wrapper
-==================================
+# PDFGen-Python: HTML to PDF wrapper
 
-[![Build Status](https://travis-ci.org/shivanshs9/python-pdfkit-async.svg?branch=master)](https://travis-ci.org/shivanshs9/python-pdfkit-async) [![PyPI version](https://badge.fury.io/py/pdfkit-async.svg)](https://badge.fury.io/py/pdfkit-async) [![PyPI pyversions](https://img.shields.io/pypi/pyversions/pdfkit-async.svg)](https://pypi.python.org/pypi/pdfkit-async/)
+[![Build Status](https://travis-ci.org/shivanshs9/pdfgen-python.svg?branch=master)](https://travis-ci.org/shivanshs9/pdfgen-python) [![PyPI version](https://badge.fury.io/py/pdfgen.svg)](https://badge.fury.io/py/pdfgen) [![PyPI pyversions](https://img.shields.io/pypi/pyversions/pdfgen.svg)](https://pypi.python.org/pypi/pdfgen/)
 
-
-Python 3.5+ async wrapper for wkhtmltopdf utility to convert HTML to PDF
-using Webkit.
+Python 3.6.1+ async wrapper for [Pyppeteer](https://pyppeteer.github.io/pyppeteer/index.html) to convert HTML to PDF.
 
 **NOTE:** All the public API functions are adapted to async coroutines, so use them with await!
 
-* * * * *
+---
 
-This is adapted version of [ruby
-PDFKit](https://github.com/pdfkit/pdfkit) library, so big thanks to
+This is adapted version of [python-PDFKit](https://github.com/JazzCore/python-pdfkit/) library, so big thanks to
 them!
 
-Installation
-============
+---
 
-1.  Install python-pdfkit:
+## Installation
+
+1. Install pdfgen:
+
 ```bash
-$ pip install pdfkit-async
+$ pip install pdfgen
 ```
 
-2.  Install wkhtmltopdf:
-    -   Windows and other options: check wkhtmltopdf
-    [homepage](http://wkhtmltopdf.org/) for binary installers
+2. It'll also install Chromium at the time of setup. If it somehow fails, then run `$ pyppeteer-install` to download Chromium beforehand.
 
-    -   Debian/Ubuntu:
-    ```bash
-    $ sudo apt-get install wkhtmltopdf
-    ```
+# Usage
 
-    -   macOS:
-    ```bash
-    $ brew install caskroom/cask/wkhtmltopdf
-    ```
-
-**Warning!** Version in debian/ubuntu repos have reduced functionality
-(because it compiled without the wkhtmltopdf QT patches), such as adding
-outlines, headers, footers, TOC etc. To use this options you should
-install static binary from [wkhtmltopdf](http://wkhtmltopdf.org/) site
-or you can use [this
-script](https://github.com/JazzCore/python-pdfkit/blob/master/travis/before-script.sh).
-
-Usage
-=====
-
-For simple tasks:
+For simple async tasks:
 
 ```python
-import pdfkit
+import pdfgen
 
 async def f():
-    await pdfkit.from_url('http://google.com', 'out.pdf')
-    await pdfkit.from_file('test.html', 'out.pdf')
-    await pdfkit.from_string('Hello!', 'out.pdf')
+    await pdfgen.from_url('http://google.com', 'out.pdf')
+    await pdfgen.from_file('test.html', 'out.pdf')
+    await pdfgen.from_string('Hello!', 'out.pdf')
+```
+
+Sync API is also provided at `pdfgen.sync` for all the above-mentioned functions:
+
+```python
+import pdfgen
+
+pdfgen.sync.from_url('http://google.com', 'out.pdf')
+pdfgen.sync.from_file('test.html', 'out.pdf')
+pdfgen.sync.from_string('Hello!', 'out.pdf')
 ```
 
 You can pass a list with multiple URLs or files:
 
 ```python
-await pdfkit.from_url(['google.com', 'yandex.ru', 'engadget.com'], 'out.pdf')
-await pdfkit.from_file(['file1.html', 'file2.html'], 'out.pdf')
+pdfgen.sync.from_url(['google.com', 'yandex.ru', 'engadget.com'], 'out.pdf')
+pdfgen.sync.from_file(['file1.html', 'file2.html'], 'out.pdf')
 ```
 
 Also you can pass an opened file:
 
 ```python
 with open('file.html') as f:
-    await pdfkit.from_file(f, 'out.pdf')
+    pdfgen.sync.pdfgen(f, 'out.pdf')
 ```
 
 If you wish to further process generated PDF, you can read it to a
 variable:
 
 ```python
-# Use False instead of output path to save pdf to a variable
-pdf = await pdfkit.from_url('http://google.com', False)
+# Ignore output_path parameter to save pdf to a variable
+pdf = pdfgen.sync.from_url('http://google.com')
 ```
 
-You can specify all wkhtmltopdf
-[options](http://wkhtmltopdf.org/usage/wkhtmltopdf.txt). You can drop
-'--' in option name. If option without value, use *None, False* or *''*
-for dict value:. For repeatable options (incl. allow, cookie,
-custom-header, post, postfile, run-script, replace) you may use a list
-or a tuple. With option that need multiple values (e.g. --custom-header
-Authorization secret) we may use a 2-tuple (see example below).
+You can specify all [Pyppeteer
+options](https://pyppeteer.github.io/pyppeteer/reference.html#pyppeteer.page.Page.pdf) used for saving PDF as shown below:
 
 ```python
 options = {
-    'page-size': 'Letter',
-    'margin-top': '0.75in',
-    'margin-right': '0.75in',
-    'margin-bottom': '0.75in',
-    'margin-left': '0.75in',
-    'encoding': "UTF-8",
-    'custom-header' : [
-        ('Accept-Encoding', 'gzip')
-    ]
-    'cookie': [
-        ('cookie-name1', 'cookie-value1'),
-        ('cookie-name2', 'cookie-value2'),
-    ],
-    'no-outline': None
+    'scale': 2.0,
+    'format': 'Letter',
+    'margin': {
+        'top': '0.75in',
+        'right': '0.75in',
+        'bottom': '0.75in',
+        'left': '0.75in',
+    },
+    'pageRanges': '1-5,8',
 }
 
-await pdfkit.from_url('http://google.com', 'out.pdf', options=options)
-```
-
-By default, PDFKit will show all `wkhtmltopdf` output. If you don't want
-it, you need to pass `quiet` option:
-
-```python
-options = {
-    'quiet': ''
-    }
-
-await pdfkit.from_url('google.com', 'out.pdf', options=options)
-```
-
-Due to wkhtmltopdf command syntax, **TOC** and **Cover** options must be
-specified separately. If you need cover before TOC, use `cover_first`
-option:
-
-```python
-toc = {
-    'xsl-style-sheet': 'toc.xsl'
-}
-
-cover = 'cover.html'
-
-await pdfkit.from_file('file.html', options=options, toc=toc, cover=cover)
-await pdfkit.from_file('file.html', options=options, toc=toc, cover=cover, cover_first=True)
-```
-
-You can specify external CSS files when converting files or strings
-using *css* option.
-
-**Warning** This is a workaround for [this
-bug](http://code.google.com/p/wkhtmltopdf/issues/detail?id=144) in
-wkhtmltopdf. You should try *--user-style-sheet* option first.
-
-```python
-# Single CSS file
-css = 'example.css'
-await pdfkit.from_file('file.html', options=options, css=css)
-
-# Multiple CSS files
-css = ['example.css', 'example2.css']
-await pdfkit.from_file('file.html', options=options, css=css)
+pdfgen.sync.from_url('http://google.com', 'out.pdf', options=options)
 ```
 
 You can also pass any options through meta tags in your HTML:
@@ -158,50 +93,37 @@ You can also pass any options through meta tags in your HTML:
 body = """
     <html>
       <head>
-        <meta name="pdfkit-page-size" content="Legal"/>
-        <meta name="pdfkit-orientation" content="Landscape"/>
+        <meta name="pdfgen-format" content="Legal"/>
+        <meta name="pdfgen-landscape" content="False"/>
       </head>
       Hello World!
       </html>
     """
 
-await pdfkit.from_string(body, 'out.pdf') #with --page-size=Legal and --orientation=Landscape
+pdfgen.sync.from_string(body, 'out.pdf')
 ```
 
-Configuration
-=============
+## Configuration
 
-Each API call takes an optional configuration paramater. This should be
-an instance of `pdfkit.configuration()` API call. It takes the
+Each API call takes an optional options parameter to configure print PDF behavior. However, to reduce redundancy, one can certainly set default configuration to be used for all API calls. It takes the
 configuration options as initial paramaters. The available options are:
 
--   `wkhtmltopdf` - the location of the `wkhtmltopdf` binary. By default
-    `pdfkit` will attempt to locate this using `which` (on UNIX type
-    systems) or `where` (on Windows).
--   `meta_tag_prefix` - the prefix for `pdfkit` specific meta tags - by
-    default this is `pdfkit-`
-
-Example - for when `wkhtmltopdf` is not on `$PATH`:
+- `options` - the dict used by default for pyppeteer `page.pdf(options)` call. `options` passed as argument to API call will take precedence over the default options.
+- `meta_tag_prefix` - the prefix for `pdfgen` specific meta tags - by
+  default this is `pdfgen-`.
+- `environ` - the dict used to provide env variables to pyppeteer headless browser.
 
 ```python
-config = pdfkit.configuration(wkhtmltopdf='/opt/bin/wkhtmltopdf')
+import pdfgen
 
-await pdfkit.from_string(html_string, output_file, configuration=config)
+pdfgen.configuration(options={'format': 'A4'})
+
+async def f():
+    # The resultant PDF at 'output_file' will be in A4 size and 2.0 scale.
+    await pdfgen.from_string(html_string, output_file, options={'scale': 2.0})
 ```
 
-Troubleshooting
-===============
+# Troubleshooting
 
--   `IOError: 'No wkhtmltopdf executable found'`:
-
-    Make sure that you have wkhtmltopdf in your \$PATH or set via custom
-    configuration (see preceding section). *where wkhtmltopdf* in
-    Windows or *which wkhtmltopdf* on Linux should return actual path to
-    binary.
-
--   `IOError: 'Command Failed'`
-
-    This error means that PDFKit was unable to process an input. You can
-    try to directly run a command from error message and see what error
-    caused failure (on some wkhtmltopdf versions this can be cause by
-    segmentation faults)
+- `InvalidSourceError`:
+  Provided HTML source is invalid (maybe wrong URL or non-existing file)
