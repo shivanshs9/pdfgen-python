@@ -15,13 +15,13 @@ them!
 
 ## Installation
 
-1. Install pdfgen:
+- Install pdfgen:
 
 ```bash
 $ pip install pdfgen
 ```
 
-2. It'll also install Chromium at the time of setup. If it somehow fails, then run `$ pyppeteer-install` to download Chromium beforehand.
+- To download Chromium beforehand, run `$ pdfgen-setup`. Otherwise, it'll be downloaded on the first run of library.
 
 # Usage
 

@@ -36,7 +36,7 @@ pytest-asyncio = "^0.12.0"
 asynctest = "^0.13.0"
 
 [tool.poetry.scripts]
-pdfgen = 'setup:main'
+pdfgen-setup = 'pdfgen.setup:main'
 
 [build-system]
 requires = ["poetry>=0.12"]
