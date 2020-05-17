@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-import os
 import io
+import os
+
+from .errors import InvalidSourceError
 
 
 class Source(object):
@@ -23,13 +25,8 @@ class Source(object):
             return 'file' in self.type
 
     def checkFiles(self):
-        if isinstance(self.source, list):
-            for path in self.source:
-                if not os.path.exists(path):
-                    raise IOError('No such file: %s' % path)
-        else:
-            if not hasattr(self.source, 'read') and not os.path.exists(self.source):
-                raise IOError('No such file: %s' % self.source)
+        if not hasattr(self.source, 'read') and not os.path.exists(self.source):
+            raise InvalidSourceError('No such file: %s' % self.source)
 
     def isString(self):
         return 'string' in self.type
@@ -39,3 +36,14 @@ class Source(object):
 
     def to_s(self):
         return self.source
+
+    def _append_protocol(self, path, protocol):
+        prefix = protocol if not path.startswith(protocol) else ''
+        return prefix + path
+
+    def urlPath(self):
+        if self.isUrl():
+            return self.to_s()
+        elif self.isFile() and not self.isFileObj():
+            return self._append_protocol(self.to_s(), 'file://')
+        raise ValueError('Source invalid - cannot be converted to URL paths')
