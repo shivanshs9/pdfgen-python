@@ -45,5 +45,5 @@ class Source(object):
         if self.isUrl():
             return self.to_s()
         elif self.isFile() and not self.isFileObj():
-            return self._append_protocol(self.to_s(), 'file://')
+            return self._append_protocol(os.path.abspath(self.to_s()), 'file://')
         raise ValueError('Source invalid - cannot be converted to URL paths')
