@@ -1,5 +1,9 @@
 # Changelog
 
+- 1.0.4
+
+  - Fixes #2: Use file's absolute path for urlPath (#1)
+
 - 1.0.3
 
   - Added 'pdfgen-setup' script to setup Chromium
