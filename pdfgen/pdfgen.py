@@ -83,7 +83,7 @@ class PDFGen(object):
             await self.browser.close()
 
         if count > 1:
-            result = self.merge_pdfs(result, path)
+            result = await self.merge_pdfs(result, path)
         else:
             if is_iterable(result):
                 result = result[0]
