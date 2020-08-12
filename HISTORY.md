@@ -1,5 +1,9 @@
 # Changelog
 
+- 1.0.5
+
+  - Merged #4: Fix missing await on merging PDFs
+
 - 1.0.4
 
   - Fixes #2: Use file's absolute path for urlPath (#1)
